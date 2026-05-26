@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나는 투자형일까, 투기형일까?</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f9fafb;
+    --bg-white: #ffffff;
+    --primary: #3182f6;
+    --primary-light: #e8f3ff;
+    --primary-dark: #1b64da;
+    --text: #191f28;
+    --text-sub: #4e5968;
+    --text-dim: #8b95a1;
+    --border: #f2f4f6;
+    --border-mid: #e5e8eb;
+    --red: #f04452;
+    --red-light: #fff0f1;
+    --green: #00c896;
+    --green-light: #e8f9f3;
+    --yellow: #fbbc04;
+    --shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--bg-white);
+    min-height: 100vh;
+    position: relative;
+    box-shadow: 0 0 40px rgba(0,0,0,0.04);
+  }
+  .topbar {
+    position: sticky; top: 0;
+    background: var(--bg-white);
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .topbar .logo { font-size: 17px; font-weight: 700; color: var(--primary); }
+  .topbar .step-indicator { margin-left: auto; font-size: 13px; color: var(--text-dim); font-weight: 500; }
+  .progress-track { height: 3px; background: var(--border); overflow: hidden; }
+  .progress-fill {
+    height: 100%; background: var(--primary);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 0%;
+  }
+  .content {
+    padding: 24px 24px 140px;
+    animation: fadeUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .label-tag {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 12px; font-weight: 600;
+    padding: 4px 10px; border-radius: 6px;
+    margin-bottom: 12px;
+  }
+  h1.title {
+    font-size: 24px; font-weight: 700;
+    line-height: 1.35; margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    font-size: 15px; color: var(--text-sub);
+    margin-bottom: 24px; line-height: 1.5;
+  }
+
+  /* === Intro === */
+  .intro-hero {
+    background: linear-gradient(135deg, #3182f6 0%, #5e9eff 100%);
+    border-radius: 20px; padding: 36px 28px;
+    color: white; text-align: center;
+    margin-bottom: 24px; position: relative; overflow: hidden;
+  }
+  .intro-hero::before {
+    content: ''; position: absolute;
+    top: -50%; right: -30%;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+  }
+  .intro-hero .money { font-size: 48px; margin-bottom: 8px; position: relative; }
+  .intro-hero h2 {
+    font-size: 26px; font-weight: 700; margin-bottom: 8px;
+    position: relative; letter-spacing: -0.5px;
+  }
+  .intro-hero p { font-size: 14px; opacity: 0.92; position: relative; }
+
+  .feature-list {
+    background: var(--bg); border-radius: 16px;
+    padding: 20px; margin-bottom: 24px;
+  }
+  .feature-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; }
+  .feature-item .num {
+    background: var(--primary); color: white;
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .feature-item .text { font-size: 14px; color: var(--text-sub); line-height: 1.5; }
+  .feature-item .text strong { color: var(--text); font-weight: 600; }
+
+  /* === Portfolio === */
+  .portfolio-bar {
+    background: var(--text); color: white;
+    border-radius: 16px; padding: 18px 20px;
+    margin-bottom: 16px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .portfolio-bar .left .label { font-size: 12px; opacity: 0.7; margin-bottom: 4px; }
+  .portfolio-bar .left .amount { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+  .portfolio-bar .right { text-align: right; }
+  .portfolio-bar .right .change { font-size: 15px; font-weight: 700; }
+  .portfolio-bar .right .change.up { color: #ff6b76; }
+  .portfolio-bar .right .change.down { color: #5fb4ff; }
+  .portfolio-bar .right .label { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+
+  /* === Owned Stock Highlight === */
+  .my-stock-card {
+    background: linear-gradient(135deg, #e8f3ff 0%, #f5faff 100%);
+    border: 2px solid var(--primary);
+    border-radius: 16px; padding: 18px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .my-stock-card .owned-tag {
+    position: absolute; top: 14px; right: 14px;
+    background: var(--primary); color: white;
+    font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 6px;
+  }
+  .my-stock-card .label-small {
+    font-size: 11px; color: var(--primary-dark);
+    font-weight: 600; margin-bottom: 4px;
+  }
+  .my-stock-card .name {
+    font-size: 18px; font-weight: 700; margin-bottom: 2px;
+  }
+  .my-stock-card .industry { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; }
+  .my-stock-card .price-row {
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .my-stock-card .price-row .price-now { font-size: 22px; font-weight: 700; }
+  .my-stock-card .price-row .change-info { text-align: right; }
+  .my-stock-card .price-row .change-info .week { font-size: 14px; font-weight: 700; }
+  .my-stock-card .price-row .change-info .total { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+  /* === Other Stocks Compact === */
+  .stocks-compact {
+    background: var(--bg-white);
+    border: 1px solid var(--border-mid);
+    border-radius: 16px;
+    padding: 4px 0;
+    margin-bottom: 20px;
+  }
+  .stocks-compact .header {
+    font-size: 12px; font-weight: 600;
+    color: var(--text-dim);
+    padding: 12px 16px 8px;
+  }
+  .stock-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+  }
+  .stock-row .left .name { font-size: 14px; font-weight: 600; }
+  .stock-row .left .industry { font-size: 11px; color: var(--text-dim); }
+  .stock-row .right { text-align: right; }
+  .stock-row .right .price { font-size: 14px; font-weight: 600; }
+  .stock-row .right .change-pct { font-size: 12px; font-weight: 600; }
+  .change.up { color: var(--red); }
+  .change.down { color: var(--primary); }
+  .change.neutral { color: var(--text-dim); }
+  .stock-row .mini-chart-inline {
+    width: 60px; height: 28px; margin: 0 12px;
+  }
+
+  /* === Event Card === */
+  .event-card {
+    background: linear-gradient(135deg, #fff8e1 0%, #ffefd5 100%);
+    border-radius: 16px; padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--yellow);
+  }
+  .event-card .event-label {
+    font-size: 11px; font-weight: 700;
+    color: #e08e00; letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .event-card .event-title {
+    font-size: 15px; font-weight: 700;
+    color: var(--text); line-height: 1.4; margin-bottom: 4px;
+  }
+  .event-card .event-desc { font-size: 13px; color: var(--text-sub); line-height: 1.5; }
+  .event-card.danger {
+    background: linear-gradient(135deg, #ffe5e7 0%, #ffd0d4 100%);
+    border-left-color: var(--red);
+  }
+  .event-card.danger .event-label { color: #c63340; }
+  .event-card.message {
+    background: linear-gradient(135deg, #f0f9ff 0%, #dbeefe 100%);
+    border-left-color: var(--primary);
+  }
+  .event-card.message .event-label { color: var(--primary-dark); }
+  .event-card.boom {
+    background: linear-gradient(135deg, #e8f9f3 0%, #d0f5e6 100%);
+    border-left-color: var(--green);
+  }
+  .event-card.boom .event-label { color: #007a5d; }
+
+  /* === Action Buttons === */
+  .action-section { margin-top: 20px; }
+  .action-question {
+    font-size: 16px; font-weight: 700;
+    margin-bottom: 14px; color: var(--text);
+  }
+  .action-grid { display: flex; flex-direction: column; gap: 10px; }
+  .action-btn {
+    background: var(--bg-white);
+    border: 2px solid var(--border-mid);
+    border-radius: 14px; padding: 16px 18px;
+    cursor: pointer; transition: all 0.15s;
+    text-align: left; font-family: inherit; width: 100%;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .action-btn:active { transform: scale(0.98); }
+  .action-btn:hover { border-color: var(--primary); }
+  .action-btn.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+  .action-btn .icon { font-size: 24px; flex-shrink: 0; }
+  .action-btn .text { flex: 1; }
+  .action-btn .text .label { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .action-btn .text .desc { font-size: 12px; color: var(--text-dim); }
+
+  /* === Sub-choice (갈아탈 종목 선택 등) === */
+  .subchoice-modal {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none; align-items: flex-end; justify-content: center;
+    z-index: 200;
+  }
+  .subchoice-modal.open { display: flex; }
+  .subchoice-content {
+    background: white; width: 100%; max-width: 480px;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px 32px;
+    animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .subchoice-content h3 {
+    font-size: 18px; font-weight: 700; margin-bottom: 6px;
+  }
+  .subchoice-content .desc {
+    font-size: 13px; color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+  .subchoice-content .options { display: flex; flex-direction: column; gap: 8px; }
+  .sub-opt {
+    border: 2px solid var(--border-mid);
+    border-radius: 12px; padding: 14px;
+    cursor: pointer; transition: all 0.15s;
+    display: flex; justify-content: space-between; align-items: center;
+    background: white;
+  }
+  .sub-opt:active { transform: scale(0.98); }
+  .sub-opt .left { font-weight: 600; font-size: 15px; }
+  .sub-opt .left .sub { font-size: 11px; color: var(--text-dim); font-weight: 400; }
+  .sub-opt .right { font-size: 13px; font-weight: 600; }
+  .sub-opt.disabled {
+    opacity: 0.4; cursor: not-allowed;
+  }
+  .modal-close {
+    background: var(--bg); border: none;
+    padding: 12px; width: 100%; border-radius: 10px;
+    margin-top: 12px; cursor: pointer;
+    font-family: inherit; font-size: 14px; color: var(--text-sub);
+  }
+
+  /* === Bottom CTA === */
+  .bottom-cta {
+    position: fixed; bottom: 0;
+    left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px;
+    padding: 16px 24px 24px;
+    background: linear-gradient(to top, var(--bg-white) 80%, rgba(255,255,255,0));
+    z-index: 50;
+  }
+  .cta-btn {
+    width: 100%;
+    background: var(--primary); color: white;
+    border: none; border-radius: 14px;
+    padding: 17px; font-size: 16px; font-weight: 700;
+    font-family: inherit; cursor: pointer; transition: all 0.15s;
+  }
+  .cta-btn:active { transform: scale(0.99); }
+  .cta-btn:disabled {
+    background: var(--border-mid); color: var(--text-dim); cursor: not-allowed;
+  }
+  .cta-btn.secondary { background: var(--bg); color: var(--text); }
+
+  /* === Result === */
+  .result-hero { text-align: center; padding: 16px 0 20px; margin-bottom: 20px; }
+  .result-emoji { font-size: 64px; margin-bottom: 12px; }
+  .result-type {
+    font-size: 28px; font-weight: 800; letter-spacing: -0.5px;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, var(--primary), #00c896);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .result-subtitle { font-size: 14px; color: var(--text-sub); }
+  .score-card { background: var(--bg); border-radius: 16px; padding: 22px; margin-bottom: 16px; }
+  .score-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px; font-size: 14px; font-weight: 600;
+  }
+  .score-row .label-invest { color: var(--primary); }
+  .score-row .label-speculate { color: var(--red); }
+  .score-bar-wrap {
+    height: 12px; background: white;
+    border-radius: 6px; overflow: hidden; display: flex;
+  }
+  .score-bar-invest {
+    background: var(--primary); height: 100%;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .score-bar-speculate {
+    background: var(--red); height: 100%;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .summary-card {
+    background: var(--bg-white); border: 1px solid var(--border-mid);
+    border-radius: 16px; padding: 22px; margin-bottom: 16px;
+  }
+  .summary-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+  .summary-card .text { font-size: 14px; color: var(--text-sub); line-height: 1.65; }
+  .stat-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin-bottom: 16px;
+  }
+  .stat-box {
+    background: var(--bg); border-radius: 12px;
+    padding: 16px; text-align: center;
+  }
+  .stat-box .num {
+    font-size: 22px; font-weight: 800;
+    color: var(--primary); letter-spacing: -0.5px;
+  }
+  .stat-box .label { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+  /* === Stock Selection (intro) === */
+  .stock-card-select {
+    background: var(--bg-white);
+    border: 2px solid var(--border-mid);
+    border-radius: 16px;
+    padding: 18px; margin-bottom: 12px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .stock-card-select:active { transform: scale(0.98); }
+  .stock-card-select.selected {
+    border-color: var(--primary); background: var(--primary-light);
+  }
+  .stock-card-select .top {
+    display: flex; justify-content: space-between; margin-bottom: 8px;
+  }
+  .stock-card-select .name { font-size: 17px; font-weight: 700; }
+  .stock-card-select .industry { font-size: 12px; color: var(--text-dim); }
+  .stock-card-select .desc { font-size: 13px; color: var(--text-sub); margin-top: 4px; }
+
+  /* === Submit area === */
+  .submit-area {
+    background: var(--bg); border-radius: 16px;
+    padding: 20px; margin-bottom: 16px;
+    text-align: center;
+  }
+  .submit-area p { font-size: 13px; color: var(--text-sub); margin-bottom: 12px; }
+  .form-row { margin-bottom: 12px; text-align: left; }
+  .form-row label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--text-sub); margin-bottom: 6px;
+  }
+  .form-row input, .form-row select {
+    width: 100%; padding: 12px;
+    border: 1px solid var(--border-mid);
+    border-radius: 10px; font-size: 14px;
+    font-family: inherit; background: white;
+  }
+  .form-row input:focus, .form-row select:focus {
+    outline: none; border-color: var(--primary);
+  }
+  .submit-status {
+    font-size: 13px; margin-top: 8px;
+    padding: 8px; border-radius: 8px;
+  }
+  .submit-status.success { background: var(--green-light); color: #007a5d; }
+  .submit-status.error { background: var(--red-light); color: #c63340; }
+  .submit-status.loading { background: var(--primary-light); color: var(--primary-dark); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="logo">투자 vs 투기 테스트</div>
+    <div class="step-indicator" id="step-indicator"></div>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+  <div class="content" id="content"></div>
+  <div class="bottom-cta" id="bottom-cta" style="display:none;"></div>
+</div>
+
+<!-- 갈아탈 종목 선택 모달 -->
+<div class="subchoice-modal" id="subchoice-modal">
+  <div class="subchoice-content" id="subchoice-content"></div>
+</div>
+
+<script>
+// ============================================================
+// ⚙️ 설정: 구글 스프레드시트 자동 저장 (Apps Script URL)
+// ============================================================
+// 1) GitHub Pages 배포 후
+// 2) Google Apps Script로 웹 앱 만들고 (코드는 별도 안내)
+// 3) 아래 URL을 본인 것으로 교체
+const GOOGLE_SCRIPT_URL = ''; // 예: 'https://script.google.com/macros/s/AKfycby.../exec'
+// 비워두면 자동 저장 안 됨 (응답 코드만 표시)
+
+// ============================================================
+// 📊 종목 데이터
+// ============================================================
+const STOCKS = {
+  A: {
+    name: '드림스타테크',
+    industry: 'IT · 메타버스 (신생)',
+    desc: '🔥 SNS 화제 · 적자 기업 · 변동성 매우 큼',
+    initialPrice: 10000,
+    type: 'speculative'
+  },
+  B: {
+    name: '대성정밀',
+    industry: '기계 부품 (40년 기업)',
+    desc: '📘 5년 흑자 · 인지도 낮음 · 변동성 작음',
+    initialPrice: 10000,
+    type: 'value'
+  },
+  C: {
+    name: '뷰티온',
+    industry: '화장품 (신규 상장)',
+    desc: '✨ 아이돌 광고 · 실적 미공개 · 트렌드 종목',
+    initialPrice: 10000,
+    type: 'trend'
+  },
+  D: {
+    name: '한국전력공업',
+    industry: '전력 인프라 (업계 1위)',
+    desc: '🏛️ 업계 1위 · 배당 지급 · 안정적',
+    initialPrice: 10000,
+    type: 'stable'
+  }
+};
+
+// ============================================================
+// 📅 5라운드 시장 시나리오 (시장 전체 관점)
+// ============================================================
+// priceChange: 각 종목 주가 변동률 (%)
+// hotStock: 이 라운드에서 부각된 "뜨거운 종목" (FOMO 유발용)
+// recommendStock: 친구가 추천하는 종목 (3주차용)
+const ROUNDS = [
+  // ===== 라운드 1: FOMO =====
+  {
+    label: '1주차',
+    eventType: 'news',
+    eventLabel: '시장 뉴스',
+    eventTitle: 'A사 드림스타테크 SNS에서 폭등 화제 🚀',
+    eventDesc: '유튜브에서 "다음 떡상 종목" 언급되며 A사 +25% 급등. 다른 종목은 잠잠합니다.',
+    priceChange: { A: 25, B: -3, C: 12, D: 1 },
+    hotStock: 'A',
+    question: '시장 분위기가 A사로 쏠리고 있어요. 어떻게 할까요?',
+    actions: [
+      { id: 'hold', label: '내 종목 그대로 유지', desc: '내 계획대로 간다', icon: '🧘', 
+        score: { invest: 2, speculate: 0 }, type: 'hold' },
+      { id: 'chase_hot', label: 'A사로 갈아타기', desc: '뜨거운 종목을 따라간다 (FOMO)', icon: '🏃', 
+        score: { invest: 0, speculate: 3 }, type: 'switch', target: 'A' },
+      { id: 'analyze', label: '갈아타지 않고 A사 정보부터 분석', desc: '실적·공시 먼저 확인', icon: '🔍', 
+        score: { invest: 3, speculate: 0 }, type: 'hold' }
+    ]
+  },
+  // ===== 라운드 2: 폭락 (A사 -40%) =====
+  {
+    label: '2주차',
+    eventType: 'danger',
+    eventLabel: '⚠️ 긴급 공시',
+    eventTitle: 'A사 적자 확대 공시, 주가 -40% 폭락',
+    eventDesc: 'A사가 큰 폭으로 하락. 신생 IT 종목 전반 약세. 안정적 종목은 소폭 상승.',
+    priceChange: { A: -40, B: 5, C: -15, D: 3 },
+    hotStock: null,
+    // 동적 질문: 보유 종목에 따라 다름
+    questionDynamic: (ownedKey) => {
+      if (ownedKey === 'A') return '내 종목이 -40% 폭락했어요! 어떻게 할까요?';
+      if (ownedKey === 'C') return '내 종목도 -15% 하락. 다른 종목 상황도 보고 결정해주세요.';
+      return '내 종목은 괜찮지만 시장이 시끄럽네요. 어떻게 할까요?';
+    },
+    actions: [
+      { id: 'hold', label: '내 종목 그대로 유지', desc: '시장 노이즈 무시', icon: '🧘', 
+        score: { invest: 2, speculate: 0 }, type: 'hold' },
+      { id: 'switch_safe', label: '안정 종목(B 또는 D)으로 갈아타기', desc: '리스크 관리', icon: '🛡️', 
+        score: { invest: 3, speculate: 0 }, type: 'switch_choose', options: ['B', 'D'] },
+      { id: 'buy_dip', label: '떨어진 A사를 매수 (물타기)', desc: '"싸졌으니 더 산다"', icon: '💸', 
+        score: { invest: 0, speculate: 3 }, type: 'switch', target: 'A' }
+    ]
+  },
+  // ===== 라운드 3: 친구 추천 (C사 추천) =====
+  {
+    label: '3주차',
+    eventType: 'message',
+    eventLabel: '💬 친구 카톡',
+    eventTitle: '"야 C사 뷰티온 지금 들어가면 100% 오른대"',
+    eventDesc: '친구가 갑자기 추천. C사가 인플루언서 사이에서 화제라고. 시장은 큰 변동 없음.',
+    priceChange: { A: -5, B: 2, C: 10, D: 2 },
+    hotStock: 'C',
+    question: '친구의 추천을 어떻게 할까요?',
+    actions: [
+      { id: 'ignore', label: '무시하고 내 종목 유지', desc: '외부 정보에 흔들리지 않음', icon: '🚫', 
+        score: { invest: 3, speculate: 0 }, type: 'hold' },
+      { id: 'follow_friend', label: 'C사로 갈아타기 (친구 말 믿음)', desc: '기회 놓치기 싫음', icon: '📱', 
+        score: { invest: 0, speculate: 3 }, type: 'switch', target: 'C' },
+      { id: 'check_first', label: '내 종목 유지하되 C사 정보 직접 검증', desc: '추천은 듣지만 검증', icon: '🤔', 
+        score: { invest: 2, speculate: 1 }, type: 'hold' }
+    ]
+  },
+  // ===== 라운드 4: 호황 (수익 발생) =====
+  {
+    label: '4주차',
+    eventType: 'boom',
+    eventLabel: '📈 시장 호황',
+    eventTitle: '시장 전반 상승세, 모든 종목 강세',
+    eventDesc: '경기 호황 신호로 시장 분위기 좋음. 보유 중인 종목이 수익 구간에 들어왔을 가능성이 큽니다.',
+    priceChange: { A: 18, B: 10, C: 22, D: 8 },
+    hotStock: 'C',
+    questionDynamic: (ownedKey) => {
+      return '시장이 좋아서 수익이 났다면, 어떻게 할까요?';
+    },
+    actions: [
+      { id: 'hold_long', label: '계속 유지 (장기 보유)', desc: '단기 수익에 흔들리지 않음', icon: '🧘', 
+        score: { invest: 3, speculate: 0 }, type: 'hold' },
+      { id: 'take_profit', label: '절반 익절, 절반 유지', desc: '수익 확보 + 추가 상승 노림', icon: '💰', 
+        score: { invest: 2, speculate: 1 }, type: 'partial_sell' },
+      { id: 'switch_hotter', label: '가장 많이 오른 종목으로 갈아타기', desc: '더 큰 수익을 노림', icon: '🔥', 
+        score: { invest: 0, speculate: 3 }, type: 'switch_to_hottest' }
+    ]
+  },
+  // ===== 라운드 5: 폭락 (패닉) =====
+  {
+    label: '5주차',
+    eventType: 'danger',
+    eventLabel: '🚨 시장 충격',
+    eventTitle: '글로벌 악재, 전 종목 동반 폭락',
+    eventDesc: '예상치 못한 외부 충격으로 모든 종목이 -15~-25% 폭락. 시장이 패닉 상태입니다.',
+    priceChange: { A: -22, B: -15, C: -25, D: -17 },
+    hotStock: null,
+    question: '시장이 패닉이에요. 마지막 선택은?',
+    actions: [
+      { id: 'buy_dip_value', label: '우량주(B 또는 D) 저점 매수', desc: '위기를 기회로', icon: '🎯', 
+        score: { invest: 3, speculate: 0 }, type: 'switch_choose', options: ['B', 'D'] },
+      { id: 'panic_sell', label: '전량 매도 (더 떨어지기 전에 다 판다)', desc: '공포에 의한 매도', icon: '😱', 
+        score: { invest: 0, speculate: 3 }, type: 'sell_all' },
+      { id: 'gamble', label: '"이참에 코인이나 도박을 해볼까?"', desc: '다른 위험한 곳으로 도피', icon: '🎰', 
+        score: { invest: 0, speculate: 4 }, type: 'gamble' }
+    ]
+  }
+];
+
+// ============================================================
+// 🎮 상태
+// ============================================================
+let state = {
+  screen: 'intro',
+  initialStock: null,    // 처음 고른 종목 (기록용)
+  ownedKey: null,        // 현재 보유 종목 키
+  ownedShares: 0,        // 보유 주식 수
+  cash: 1000000,
+  currentRound: 0,
+  selectedAction: null,
+  pendingSwitchTarget: null, // 갈아탈 종목 선택 대기
+  actionHistory: [],
+  scores: { invest: 0, speculate: 0 },
+  startTime: Date.now()
+};
+
+// 주가 히스토리 (라운드마다 갱신)
+let priceHistory = {
+  A: [10000], B: [10000], C: [10000], D: [10000]
+};
+
+// ============================================================
+// 🎨 렌더링
+// ============================================================
+const content = document.getElementById('content');
+const bottomCta = document.getElementById('bottom-cta');
+const progressFill = document.getElementById('progress-fill');
+const stepIndicator = document.getElementById('step-indicator');
+
+function getCurrentPrice(key) {
+  return priceHistory[key][priceHistory[key].length - 1];
+}
+
+function getPortfolioValue() {
+  let val = state.cash;
+  if (state.ownedKey) {
+    val += state.ownedShares * getCurrentPrice(state.ownedKey);
+  }
+  return val;
+}
+
+function updateProgress() {
+  let percent = 0;
+  if (state.screen === 'intro') percent = 0;
+  else if (state.screen === 'select') percent = 10;
+  else if (state.screen === 'round') percent = 10 + (state.currentRound + 1) * 16;
+  else if (state.screen === 'result') percent = 100;
+  progressFill.style.width = percent + '%';
+
+  if (state.screen === 'intro') stepIndicator.textContent = '';
+  else if (state.screen === 'select') stepIndicator.textContent = '종목 선택';
+  else if (state.screen === 'round') stepIndicator.textContent = `${state.currentRound + 1}주차 / 5주차`;
+  else if (state.screen === 'result') stepIndicator.textContent = '결과';
+}
+
+function render() {
+  updateProgress();
+  if (state.screen === 'intro') renderIntro();
+  else if (state.screen === 'select') renderSelect();
+  else if (state.screen === 'round') renderRound();
+  else if (state.screen === 'result') renderResult();
+}
+
+// ========= 인트로 =========
+function renderIntro() {
+  content.innerHTML = `
+    <div class="intro-hero">
+      <div class="money">💰</div>
+      <h2>100만 원이 생겼다!</h2>
+      <p>5주 동안 시장이 흔들려도<br>나는 끝까지 투자자일 수 있을까?</p>
+    </div>
+    <div class="label-tag">테스트 안내</div>
+    <h1 class="title">나는 진짜 '투자자'일까?<br>아니면 '투기꾼'일까?</h1>
+    <p class="subtitle">시장이 매주 출렁이는 상황에서 어떻게 행동하는지 5라운드에 걸쳐 진단합니다.</p>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="num">1</div>
+        <div class="text"><strong>4개 종목 중 하나</strong>를 골라 100만 원 투자</div>
+      </div>
+      <div class="feature-item">
+        <div class="num">2</div>
+        <div class="text"><strong>매주 시장 이벤트</strong>가 발생합니다 (폭등, 폭락, 친구 추천 등)</div>
+      </div>
+      <div class="feature-item">
+        <div class="num">3</div>
+        <div class="text">매주 <strong>유지 / 갈아타기 / 특수 행동</strong> 중 선택</div>
+      </div>
+      <div class="feature-item">
+        <div class="num">4</div>
+        <div class="text">5주 후 <strong>투자형 vs 투기형 비율</strong> + 최종 수익률 공개</div>
+      </div>
+    </div>
+  `;
+  bottomCta.style.display = 'block';
+  bottomCta.innerHTML = `<button class="cta-btn" onclick="goToSelect()">시작하기</button>`;
+}
+
+function goToSelect() {
+  state.screen = 'select';
+  render();
+}
+
+// ========= 종목 선택 =========
+function renderSelect() {
+  let cards = '';
+  for (const key of ['A', 'B', 'C', 'D']) {
+    const s = STOCKS[key];
+    const sel = state.initialStock === key;
+    cards += `
+      <div class="stock-card-select ${sel ? 'selected' : ''}" onclick="selectInitialStock('${key}')">
+        <div class="top">
+          <div>
+            <div class="name">${key}사 · ${s.name}</div>
+            <div class="industry">${s.industry}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-weight:700;">${s.initialPrice.toLocaleString()}원</div>
+            <div style="font-size:11px;color:var(--text-dim);">시작가</div>
+          </div>
+        </div>
+        <div class="desc">${s.desc}</div>
+      </div>
+    `;
+  }
+  content.innerHTML = `
+    <div class="label-tag">STEP 1</div>
+    <h1 class="title">어떤 종목을 살까요?</h1>
+    <p class="subtitle">100만 원으로 1개 종목 매수. 이후 5주간 시장에 어떻게 대응할지 테스트됩니다.</p>
+    ${cards}
+  `;
+  updateSelectCta();
+}
+function selectInitialStock(key) {
+  state.initialStock = key;
+  render();
+}
+function updateSelectCta() {
+  bottomCta.style.display = 'block';
+  bottomCta.innerHTML = `
+    <button class="cta-btn" onclick="confirmInitial()" ${state.initialStock ? '' : 'disabled'}>
+      ${state.initialStock ? `${STOCKS[state.initialStock].name}에 100만 원 투자` : '종목을 선택해주세요'}
+    </button>
+  `;
+}
+function confirmInitial() {
+  const s = STOCKS[state.initialStock];
+  const shares = Math.floor(state.cash / s.initialPrice);
+  state.ownedKey = state.initialStock;
+  state.ownedShares = shares;
+  state.cash -= shares * s.initialPrice;
+  state.screen = 'round';
+  state.currentRound = 0;
+  render();
+}
+
+// ========= 라운드 =========
+function renderRound() {
+  const round = ROUNDS[state.currentRound];
+  
+  // 주가 업데이트 (라운드 첫 진입 시)
+  if (priceHistory.A.length === state.currentRound + 1) {
+    for (const key of ['A', 'B', 'C', 'D']) {
+      const prev = priceHistory[key][priceHistory[key].length - 1];
+      const newPrice = Math.max(500, Math.round(prev * (1 + round.priceChange[key] / 100)));
+      priceHistory[key].push(newPrice);
+    }
+  }
+
+  const portfolioValue = getPortfolioValue();
+  const totalChange = portfolioValue - 1000000;
+  const totalPct = (totalChange / 1000000 * 100).toFixed(1);
+
+  // 내 종목 카드 (강조)
+  const myStock = STOCKS[state.ownedKey];
+  const myPrice = getCurrentPrice(state.ownedKey);
+  const myPrevPrice = priceHistory[state.ownedKey][priceHistory[state.ownedKey].length - 2] || myStock.initialPrice;
+  const myWeekChg = ((myPrice - myPrevPrice) / myPrevPrice * 100).toFixed(1);
+  const myTotalChg = ((myPrice - myStock.initialPrice) / myStock.initialPrice * 100).toFixed(1);
+  const myValue = state.ownedShares * myPrice;
+  
+  const myStockHtml = state.ownedKey ? `
+    <div class="my-stock-card">
+      <div class="owned-tag">내 종목</div>
+      <div class="label-small">${state.ownedKey}사 보유 중</div>
+      <div class="name">${myStock.name}</div>
+      <div class="industry">${myStock.industry} · ${state.ownedShares}주</div>
+      <div class="price-row">
+        <div>
+          <div class="price-now">${myValue.toLocaleString()}원</div>
+          <div style="font-size:11px;color:var(--text-dim);">주당 ${myPrice.toLocaleString()}원</div>
+        </div>
+        <div class="change-info">
+          <div class="week change ${myWeekChg > 0 ? 'up' : (myWeekChg < 0 ? 'down' : 'neutral')}">
+            ${myWeekChg > 0 ? '+' : ''}${myWeekChg}% (이번 주)
+          </div>
+          <div class="total">총 ${myTotalChg > 0 ? '+' : ''}${myTotalChg}%</div>
+        </div>
+      </div>
+    </div>
+  ` : '';
+
+  // 다른 종목들 (compact)
+  let otherStocks = `<div class="stocks-compact"><div class="header">📊 시장 전체 현황</div>`;
+  for (const key of ['A', 'B', 'C', 'D']) {
+    if (key === state.ownedKey) continue;
+    const s = STOCKS[key];
+    const cur = getCurrentPrice(key);
+    const prev = priceHistory[key][priceHistory[key].length - 2] || s.initialPrice;
+    const weekChg = ((cur - prev) / prev * 100).toFixed(1);
+    const totalChg = ((cur - s.initialPrice) / s.initialPrice * 100).toFixed(1);
+    const upDown = weekChg > 0 ? 'up' : (weekChg < 0 ? 'down' : 'neutral');
+    otherStocks += `
+      <div class="stock-row">
+        <div class="left">
+          <div class="name">${key}사 · ${s.name}</div>
+          <div class="industry">${s.industry}</div>
+        </div>
+        ${renderInlineChart(priceHistory[key])}
+        <div class="right">
+          <div class="price">${cur.toLocaleString()}원</div>
+          <div class="change-pct change ${upDown}">${weekChg > 0 ? '+' : ''}${weekChg}%</div>
+        </div>
+      </div>
+    `;
+  }
+  otherStocks += `</div>`;
+
+  // 이벤트
+  const eventClass = round.eventType;
+  const eventHtml = `
+    <div class="event-card ${eventClass}">
+      <div class="event-label">${round.eventLabel}</div>
+      <div class="event-title">${round.eventTitle}</div>
+      <div class="event-desc">${round.eventDesc}</div>
+    </div>
+  `;
+
+  // 질문
+  const question = round.questionDynamic ? round.questionDynamic(state.ownedKey) : round.question;
+
+  // 액션 버튼
+  let actionsHtml = '';
+  round.actions.forEach(action => {
+    const sel = state.selectedAction === action.id;
+    // 이미 그 종목 보유 중이면 "그 종목으로 갈아타기"는 의미 없음
+    let disabled = false;
+    if (action.type === 'switch' && action.target === state.ownedKey) disabled = true;
+    actionsHtml += `
+      <button class="action-btn ${sel ? 'selected' : ''}" 
+        onclick="${disabled ? '' : `selectAction('${action.id}')`}"
+        ${disabled ? 'style="opacity:0.4;cursor:not-allowed;"' : ''}>
+        <div class="icon">${action.icon}</div>
+        <div class="text">
+          <div class="label">${action.label}${disabled ? ' (이미 보유)' : ''}</div>
+          <div class="desc">${action.desc}</div>
+        </div>
+      </button>
+    `;
+  });
+
+  content.innerHTML = `
+    <div class="portfolio-bar">
+      <div class="left">
+        <div class="label">내 포트폴리오</div>
+        <div class="amount">${portfolioValue.toLocaleString()}원</div>
+      </div>
+      <div class="right">
+        <div class="change ${totalChange >= 0 ? 'up' : 'down'}">
+          ${totalChange >= 0 ? '+' : ''}${totalChange.toLocaleString()}원
+        </div>
+        <div class="label">${totalPct}%</div>
+      </div>
+    </div>
+    ${myStockHtml}
+    ${eventHtml}
+    ${otherStocks}
+    <div class="action-section">
+      <div class="action-question">${question}</div>
+      <div class="action-grid">${actionsHtml}</div>
+    </div>
+  `;
+
+  bottomCta.style.display = 'block';
+  bottomCta.innerHTML = `
+    <button class="cta-btn" onclick="confirmAction()" ${state.selectedAction ? '' : 'disabled'}>
+      ${state.currentRound === 4 ? '결과 확인하기 →' : '다음 주로 →'}
+    </button>
+  `;
+}
+
+function renderInlineChart(history) {
+  if (history.length < 2) return '<div class="mini-chart-inline"></div>';
+  const max = Math.max(...history), min = Math.min(...history);
+  const range = max - min || 1;
+  const points = history.map((v, i) => {
+    const x = (i / (history.length - 1)) * 100;
+    const y = 100 - ((v - min) / range) * 100;
+    return `${x},${y}`;
+  }).join(' ');
+  const color = history[history.length-1] >= history[0] ? '#f04452' : '#3182f6';
+  return `
+    <div class="mini-chart-inline">
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:100%;">
+        <polyline points="${points}" fill="none" stroke="${color}" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      </svg>
+    </div>
+  `;
+}
+
+function selectAction(id) {
+  state.selectedAction = id;
+  render();
+}
+
+// ========= 행동 실행 (핵심!) =========
+function confirmAction() {
+  const round = ROUNDS[state.currentRound];
+  const action = round.actions.find(a => a.id === state.selectedAction);
+
+  // type에 따라 실제 포트폴리오 변경
+  if (action.type === 'hold') {
+    executeAction(action, null);
+  } else if (action.type === 'switch') {
+    // 정해진 종목으로 갈아탐
+    if (action.target !== state.ownedKey) {
+      switchStock(action.target);
+    }
+    executeAction(action, action.target);
+  } else if (action.type === 'switch_choose') {
+    // 사용자가 B/D 중 선택
+    showSwitchChoiceModal(action);
+    return; // 모달 닫힌 후 실행됨
+  } else if (action.type === 'switch_to_hottest') {
+    // 가장 많이 오른 종목으로 자동 갈아탐
+    const hottest = findHottestStock();
+    if (hottest !== state.ownedKey) switchStock(hottest);
+    executeAction(action, hottest);
+  } else if (action.type === 'partial_sell') {
+    // 절반 매도
+    const sellShares = Math.floor(state.ownedShares / 2);
+    state.cash += sellShares * getCurrentPrice(state.ownedKey);
+    state.ownedShares -= sellShares;
+    executeAction(action, null);
+  } else if (action.type === 'sell_all') {
+    // 전량 매도
+    state.cash += state.ownedShares * getCurrentPrice(state.ownedKey);
+    state.ownedShares = 0;
+    state.ownedKey = null;
+    executeAction(action, null);
+  } else if (action.type === 'gamble') {
+    // 도박: 50% 확률로 +50% or -80%, 임시로 -50%로 고정 (시뮬레이션)
+    const total = getPortfolioValue();
+    const newCash = Math.round(total * 0.5); // 도박 결과 -50%
+    state.cash = newCash;
+    state.ownedShares = 0;
+    state.ownedKey = null;
+    executeAction(action, 'GAMBLE');
+  }
+}
+
+function switchStock(newKey) {
+  // 기존 종목 전부 매도
+  if (state.ownedKey && state.ownedShares > 0) {
+    state.cash += state.ownedShares * getCurrentPrice(state.ownedKey);
+  }
+  // 새 종목 매수
+  const newPrice = getCurrentPrice(newKey);
+  const newShares = Math.floor(state.cash / newPrice);
+  state.cash -= newShares * newPrice;
+  state.ownedKey = newKey;
+  state.ownedShares = newShares;
+}
+
+function findHottestStock() {
+  let best = state.ownedKey, bestChg = -Infinity;
+  for (const key of ['A', 'B', 'C', 'D']) {
+    const cur = getCurrentPrice(key);
+    const prev = priceHistory[key][priceHistory[key].length - 2] || STOCKS[key].initialPrice;
+    const chg = (cur - prev) / prev;
+    if (chg > bestChg) { bestChg = chg; best = key; }
+  }
+  return best;
+}
+
+function showSwitchChoiceModal(action) {
+  const modal = document.getElementById('subchoice-modal');
+  const content = document.getElementById('subchoice-content');
+  let opts = '';
+  action.options.forEach(key => {
+    const s = STOCKS[key];
+    const cur = getCurrentPrice(key);
+    opts += `
+      <div class="sub-opt" onclick="confirmSwitchChoice('${action.id}', '${key}')">
+        <div class="left">
+          ${key}사 · ${s.name}
+          <div class="sub">${s.industry}</div>
+        </div>
+        <div class="right">${cur.toLocaleString()}원</div>
+      </div>
+    `;
+  });
+  content.innerHTML = `
+    <h3>어느 종목으로 갈아탈까요?</h3>
+    <div class="desc">선택한 종목으로 전량 매수합니다.</div>
+    <div class="options">${opts}</div>
+    <button class="modal-close" onclick="closeModal()">취소</button>
+  `;
+  modal.classList.add('open');
+}
+
+function confirmSwitchChoice(actionId, targetKey) {
+  const round = ROUNDS[state.currentRound];
+  const action = round.actions.find(a => a.id === actionId);
+  closeModal();
+  if (targetKey !== state.ownedKey) switchStock(targetKey);
+  executeAction(action, targetKey);
+}
+
+function closeModal() {
+  document.getElementById('subchoice-modal').classList.remove('open');
+}
+
+function executeAction(action, targetInfo) {
+  state.scores.invest += action.score.invest;
+  state.scores.speculate += action.score.speculate;
+  state.actionHistory.push({
+    round: state.currentRound + 1,
+    actionId: action.id,
+    target: targetInfo,
+    invest: action.score.invest,
+    speculate: action.score.speculate,
+    portfolioValue: getPortfolioValue()
+  });
+
+  if (state.currentRound === 4) {
+    state.screen = 'result';
+    state.selectedAction = null;
+    render();
+  } else {
+    state.currentRound++;
+    state.selectedAction = null;
+    render();
+  }
+}
+
+// ========= 결과 =========
+function renderResult() {
+  const total = state.scores.invest + state.scores.speculate;
+  const investPct = total > 0 ? Math.round(state.scores.invest / total * 100) : 50;
+  const specPct = 100 - investPct;
+
+  let type, emoji, desc;
+  if (investPct >= 75) {
+    emoji = '🛡️'; type = '진짜 투자자형';
+    desc = '시장이 어떻게 출렁여도 흔들리지 않고 기업 가치와 장기적 관점을 유지하는 진정한 투자자입니다. SNS·친구·뉴스에 휘둘리지 않고 자신만의 기준으로 판단하는 점이 인상적이에요.';
+  } else if (investPct >= 55) {
+    emoji = '🌱'; type = '신중한 투자자형';
+    desc = '대체로 투자형에 가깝지만, 가끔 시장 분위기에 흔들리기도 합니다. 조금 더 자기 기준을 명확히 한다면 안정적인 장기 투자자가 될 수 있어요.';
+  } else if (investPct >= 45) {
+    emoji = '⚖️'; type = '경계선형';
+    desc = '투자와 투기 사이를 오가는 스타일입니다. 어떤 상황에서는 합리적이지만, 분위기에 따라 충동적인 결정도 합니다. 자신만의 투자 원칙을 세우는 것이 중요해요.';
+  } else if (investPct >= 25) {
+    emoji = '🎲'; type = '투기 성향 우세형';
+    desc = 'SNS 화제성, 단기 수익, 친구 추천에 자주 반응하는 성향입니다. 빠른 수익을 노리지만 그만큼 손실 위험도 큽니다. 기업 가치 분석을 배워보는 것을 추천해요.';
+  } else {
+    emoji = '🚨'; type = '완전 투기형';
+    desc = '거의 모든 결정이 단기 수익, FOMO, 외부 정보 의존에 기반합니다. 이는 투자가 아니라 도박에 가까운 행동입니다. 금융 교육과 투자 원칙 학습이 시급해요.';
+  }
+
+  const portfolioValue = getPortfolioValue();
+  const finalChg = ((portfolioValue - 1000000) / 1000000 * 100).toFixed(1);
+  
+  // 종목 변경 횟수
+  let switches = 0;
+  let prevOwned = state.initialStock;
+  state.actionHistory.forEach(h => {
+    if (h.target && h.target !== prevOwned && h.target !== 'GAMBLE') {
+      switches++;
+      prevOwned = h.target;
+    }
+  });
+
+  const code = `${state.initialStock}_${state.actionHistory.map(h => h.actionId.substring(0, 4)).join('-')}_I${state.scores.invest}S${state.scores.speculate}`;
+
+  content.innerHTML = `
+    <div class="result-hero">
+      <div class="result-emoji">${emoji}</div>
+      <div class="result-type">${type}</div>
+      <div class="result-subtitle">투자형 ${investPct}% · 투기형 ${specPct}%</div>
+    </div>
+
+    <div class="score-card">
+      <div class="score-row">
+        <span class="label-invest">📘 투자형</span>
+        <span class="label-invest">${investPct}%</span>
+      </div>
+      <div class="score-bar-wrap">
+        <div class="score-bar-invest" style="width:${investPct}%"></div>
+        <div class="score-bar-speculate" style="width:${specPct}%"></div>
+      </div>
+      <div class="score-row" style="margin-top:8px;margin-bottom:0;">
+        <span class="label-speculate">🎲 투기형</span>
+        <span class="label-speculate">${specPct}%</span>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="num">${portfolioValue.toLocaleString()}원</div>
+        <div class="label">최종 포트폴리오</div>
+      </div>
+      <div class="stat-box">
+        <div class="num" style="color:${finalChg >= 0 ? 'var(--red)' : 'var(--primary)'}">
+          ${finalChg >= 0 ? '+' : ''}${finalChg}%
+        </div>
+        <div class="label">총 수익률</div>
+      </div>
+    </div>
+    
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="num">${state.initialStock} → ${state.ownedKey || '현금'}</div>
+        <div class="label">시작 → 최종 종목</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">${switches}회</div>
+        <div class="label">종목 변경 횟수</div>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <h3>📌 당신의 투자 성향 분석</h3>
+      <div class="text">${desc}</div>
+    </div>
+
+    <div class="submit-area">
+      <p><strong>📊 설문 응답 제출</strong><br>
+      통계 분석을 위해 아래 정보를 입력하고 제출해주세요</p>
+      <div class="form-row">
+        <label>학년</label>
+        <select id="form-grade">
+          <option value="">선택</option>
+          <option value="중1">중1</option>
+          <option value="중2">중2</option>
+          <option value="중3">중3</option>
+          <option value="고1">고1</option>
+          <option value="고2">고2</option>
+          <option value="고3">고3</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>성별</label>
+        <select id="form-gender">
+          <option value="">선택</option>
+          <option value="남">남</option>
+          <option value="여">여</option>
+          <option value="응답안함">응답 안 함</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>실제로 주식 투자를 해본 적이 있나요?</label>
+        <select id="form-experience">
+          <option value="">선택</option>
+          <option value="있음">있다</option>
+          <option value="관심있음">없지만 관심 있다</option>
+          <option value="관심없음">없고 관심도 없다</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>학교에서 금융/경제 수업을 받은 적이 있나요?</label>
+        <select id="form-education">
+          <option value="">선택</option>
+          <option value="있음">있다</option>
+          <option value="없음">없다</option>
+          <option value="모름">모르겠다</option>
+        </select>
+      </div>
+      <button class="cta-btn" onclick="submitResponse()" style="margin-top:8px;">제출하기</button>
+      <div id="submit-status"></div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:12px;">
+        응답 코드: ${code}
+      </div>
+    </div>
+  `;
+
+  bottomCta.style.display = 'block';
+  bottomCta.innerHTML = `<button class="cta-btn secondary" onclick="restart()">다시 테스트하기 🔄</button>`;
+}
+
+// ========= 제출 =========
+function submitResponse() {
+  const grade = document.getElementById('form-grade').value;
+  const gender = document.getElementById('form-gender').value;
+  const experience = document.getElementById('form-experience').value;
+  const education = document.getElementById('form-education').value;
+  const statusEl = document.getElementById('submit-status');
+  
+  if (!grade || !gender || !experience || !education) {
+    statusEl.className = 'submit-status error';
+    statusEl.textContent = '⚠️ 모든 항목을 선택해주세요';
+    return;
+  }
+
+  const total = state.scores.invest + state.scores.speculate;
+  const investPct = total > 0 ? Math.round(state.scores.invest / total * 100) : 50;
+  const portfolioValue = getPortfolioValue();
+  const finalChg = ((portfolioValue - 1000000) / 1000000 * 100).toFixed(1);
+
+  const data = {
+    timestamp: new Date().toISOString(),
+    grade, gender, experience, education,
+    initialStock: state.initialStock,
+    finalStock: state.ownedKey || 'CASH',
+    investScore: state.scores.invest,
+    speculateScore: state.scores.speculate,
+    investPercent: investPct,
+    finalPortfolio: portfolioValue,
+    returnPercent: parseFloat(finalChg),
+    actions: state.actionHistory.map(h => `${h.round}:${h.actionId}`).join('|'),
+    durationSec: Math.round((Date.now() - state.startTime) / 1000)
+  };
+
+  if (!GOOGLE_SCRIPT_URL) {
+    // 자동 저장 URL이 설정 안 됨 → 코드만 보여줌
+    statusEl.className = 'submit-status success';
+    statusEl.textContent = '✓ 응답 완료! (자동 저장 미설정 — 코드를 설문지에 입력하세요)';
+    return;
+  }
+
+  statusEl.className = 'submit-status loading';
+  statusEl.textContent = '⏳ 제출 중...';
+
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors', // Google Apps Script CORS 우회
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(() => {
+    statusEl.className = 'submit-status success';
+    statusEl.textContent = '✓ 응답이 제출되었습니다. 감사합니다!';
+  }).catch(err => {
+    statusEl.className = 'submit-status error';
+    statusEl.textContent = '⚠️ 제출 실패. 다시 시도하거나 코드를 복사하세요.';
+    console.error(err);
+  });
+}
+
+function restart() {
+  for (const key in STOCKS) {
+    priceHistory[key] = [STOCKS[key].initialPrice];
+  }
+  state = {
+    screen: 'intro',
+    initialStock: null,
+    ownedKey: null,
+    ownedShares: 0,
+    cash: 1000000,
+    currentRound: 0,
+    selectedAction: null,
+    pendingSwitchTarget: null,
+    actionHistory: [],
+    scores: { invest: 0, speculate: 0 },
+    startTime: Date.now()
+  };
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
