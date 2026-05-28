@@ -520,6 +520,122 @@
   .submit-status.success { background: var(--green-light); color: #007a5d; }
   .submit-status.error { background: var(--red-light); color: #c63340; }
   .submit-status.loading { background: var(--primary-light); color: var(--primary-dark); }
+
+
+  /* === Clean Survey UI === */
+  .survey-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-mid);
+    border-radius: 18px;
+    padding: 24px 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+  }
+  .survey-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .survey-section {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary);
+    background: var(--primary-light);
+    border-radius: 999px;
+    padding: 5px 10px;
+  }
+  .survey-count {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+  .survey-question {
+    font-size: 17px;
+    line-height: 1.45;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 8px;
+  }
+  .survey-help {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+  .survey-page {
+    margin-top: 16px;
+  }
+  .survey-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .survey-option {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    border: 1.5px solid var(--border-mid);
+    border-radius: 14px;
+    padding: 14px 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: white;
+  }
+  .survey-option:hover { border-color: var(--primary); background: #fbfdff; }
+  .survey-option input { margin-top: 3px; flex-shrink: 0; accent-color: var(--primary); }
+  .survey-option span { font-size: 14px; color: var(--text); font-weight: 500; line-height: 1.45; }
+  .survey-option:has(input:checked) {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+  .survey-other-input {
+    margin-top: 12px;
+    width: 100%;
+    padding: 12px 13px;
+    border: 1px solid var(--border-mid);
+    border-radius: 12px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .survey-other-input:focus { outline: none; border-color: var(--primary); }
+  .survey-alert {
+    display: none;
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--red-light);
+    color: #c63340;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .survey-alert.show { display: block; }
+  .survey-nav {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 10px;
+  }
+  .survey-nav.single { grid-template-columns: 1fr; }
+  .survey-intro-card {
+    background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%);
+    border: 1px solid var(--border-mid);
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+  .survey-intro-card h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+  .survey-intro-card p { font-size: 14px; color: var(--text-sub); line-height: 1.65; }
+  .survey-submit-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-mid);
+    border-radius: 18px;
+    padding: 26px 22px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .survey-submit-card .emoji { font-size: 54px; margin-bottom: 12px; }
+  .survey-submit-card h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .survey-submit-card p { font-size: 14px; color: var(--text-sub); line-height: 1.6; }
+
 </style>
 </head>
 <body>
@@ -547,7 +663,7 @@
 // 1) GitHub Pages 배포 후
 // 2) Google Apps Script로 웹 앱 만들고 (코드는 별도 안내)
 // 3) 아래 URL을 본인 것으로 교체
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbydZ-X-PY6wzvpzBXsG6mO7ZwBGrCfxdWZf1lxWefbehrIgDGRKMFetp4loR-GioipQDg/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzBS43q8-iQpyrdVtGbsTIa6gXOQ6qCxjmnPFynly1qiWhAxBSC6fmLV9wdOllm4M7o/exec';
 // 비워두면 자동 저장 안 됨 (응답 코드만 표시)
 
 // ============================================================
@@ -556,29 +672,29 @@ const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbydZ-X-PY6wzv
 const STOCKS = {
   A: {
     name: '드림스타테크',
-    industry: 'IT · 메타버스 (신생)',
-    desc: '🔥 SNS 화제 · 적자 기업 · 변동성 매우 큼',
+    industry: 'IT · 메타버스',
+    desc: 'SNS 화제 · 적자 기업',
     initialPrice: 10000,
     type: 'speculative'
   },
   B: {
     name: '대성정밀',
-    industry: '기계 부품 (40년 기업)',
-    desc: '📘 5년 흑자 · 인지도 낮음 · 변동성 작음',
+    industry: '기계 부품',
+    desc: '5년 흑자 · 변동성 작음',
     initialPrice: 10000,
     type: 'value'
   },
   C: {
     name: '뷰티온',
-    industry: '화장품 (신규 상장)',
-    desc: '✨ 아이돌 광고 · 실적 미공개 · 트렌드 종목',
+    industry: '화장품',
+    desc: '아이돌 광고 · 신규 상장',
     initialPrice: 10000,
     type: 'trend'
   },
   D: {
     name: '한국전력공업',
-    industry: '전력 인프라 (업계 1위)',
-    desc: '🏛️ 업계 1위 · 배당 지급 · 안정적',
+    industry: '전력 인프라',
+    desc: '업계 1위 · 배당 지급',
     initialPrice: 10000,
     type: 'stable'
   }
@@ -597,16 +713,16 @@ const ROUNDS = [
     eventType: 'news',
     eventLabel: '시장 뉴스',
     eventTitle: 'A사 드림스타테크 SNS에서 폭등 화제 🚀',
-    eventDesc: '유튜브에서 "다음 떡상 종목" 언급되며 A사 +25% 급등. 다른 종목은 잠잠합니다.',
+    eventDesc: '',
     priceChange: { A: 25, B: -3, C: 12, D: 1 },
     hotStock: 'A',
     question: '시장 분위기가 A사로 쏠리고 있어요. 어떻게 할까요?',
     actions: [
-      { id: 'hold', label: '내 종목 그대로 유지', desc: '내 계획대로 간다', icon: '🧘', 
+      { id: 'hold', label: '내 종목 그대로 유지', icon: '🧘', 
         score: { invest: 2, speculate: 0 }, type: 'hold' },
-      { id: 'chase_hot', label: 'A사로 갈아타기', desc: '뜨거운 종목을 따라간다 (FOMO)', icon: '🏃', 
+      { id: 'chase_hot', label: 'A사로 갈아타기', icon: '🏃', 
         score: { invest: 0, speculate: 3 }, type: 'switch', target: 'A' },
-      { id: 'analyze', label: '갈아타지 않고 A사 정보부터 분석', desc: '실적·공시 먼저 확인', icon: '🔍', 
+      { id: 'analyze', label: 'A사 정보부터 분석', icon: '🔍', 
         score: { invest: 3, speculate: 0 }, type: 'hold' }
     ]
   },
@@ -616,7 +732,7 @@ const ROUNDS = [
     eventType: 'danger',
     eventLabel: '⚠️ 긴급 공시',
     eventTitle: 'A사 적자 확대 공시, 주가 -40% 폭락',
-    eventDesc: 'A사가 큰 폭으로 하락. 신생 IT 종목 전반 약세. 안정적 종목은 소폭 상승.',
+    eventDesc: '',
     priceChange: { A: -40, B: 5, C: -15, D: 3 },
     hotStock: null,
     // 동적 질문: 보유 종목에 따라 다름
@@ -626,11 +742,11 @@ const ROUNDS = [
       return '내 종목은 괜찮지만 시장이 시끄럽네요. 어떻게 할까요?';
     },
     actions: [
-      { id: 'hold', label: '내 종목 그대로 유지', desc: '시장 노이즈 무시', icon: '🧘', 
+      { id: 'hold', label: '내 종목 그대로 유지', icon: '🧘', 
         score: { invest: 2, speculate: 0 }, type: 'hold' },
-      { id: 'switch_safe', label: '안정 종목(B 또는 D)으로 갈아타기', desc: '리스크 관리', icon: '🛡️', 
+      { id: 'switch_safe', label: '안정 종목으로 갈아타기', icon: '🛡️', 
         score: { invest: 3, speculate: 0 }, type: 'switch_choose', options: ['B', 'D'] },
-      { id: 'buy_dip', label: '떨어진 A사를 매수 (물타기)', desc: '"싸졌으니 더 산다"', icon: '💸', 
+      { id: 'buy_dip', label: '떨어진 A사 매수 (물타기)', icon: '💸', 
         score: { invest: 0, speculate: 3 }, type: 'switch', target: 'A' }
     ]
   },
@@ -640,16 +756,16 @@ const ROUNDS = [
     eventType: 'message',
     eventLabel: '💬 친구 카톡',
     eventTitle: '"야 C사 뷰티온 지금 들어가면 100% 오른대"',
-    eventDesc: '친구가 갑자기 추천. C사가 인플루언서 사이에서 화제라고. 시장은 큰 변동 없음.',
+    eventDesc: '',
     priceChange: { A: -5, B: 2, C: 10, D: 2 },
     hotStock: 'C',
     question: '친구의 추천을 어떻게 할까요?',
     actions: [
-      { id: 'ignore', label: '무시하고 내 종목 유지', desc: '외부 정보에 흔들리지 않음', icon: '🚫', 
+      { id: 'ignore', label: '무시하고 내 종목 유지', icon: '🚫', 
         score: { invest: 3, speculate: 0 }, type: 'hold' },
-      { id: 'follow_friend', label: 'C사로 갈아타기 (친구 말 믿음)', desc: '기회 놓치기 싫음', icon: '📱', 
+      { id: 'follow_friend', label: 'C사로 갈아타기', icon: '📱', 
         score: { invest: 0, speculate: 3 }, type: 'switch', target: 'C' },
-      { id: 'check_first', label: '내 종목 유지하되 C사 정보 직접 검증', desc: '추천은 듣지만 검증', icon: '🤔', 
+      { id: 'check_first', label: '내 종목 유지 + C사 검증', icon: '🤔', 
         score: { invest: 2, speculate: 1 }, type: 'hold' }
     ]
   },
@@ -659,18 +775,18 @@ const ROUNDS = [
     eventType: 'boom',
     eventLabel: '📈 시장 호황',
     eventTitle: '시장 전반 상승세, 모든 종목 강세',
-    eventDesc: '경기 호황 신호로 시장 분위기 좋음. 보유 중인 종목이 수익 구간에 들어왔을 가능성이 큽니다.',
+    eventDesc: '',
     priceChange: { A: 18, B: 10, C: 22, D: 8 },
     hotStock: 'C',
     questionDynamic: (ownedKey) => {
       return '시장이 좋아서 수익이 났다면, 어떻게 할까요?';
     },
     actions: [
-      { id: 'hold_long', label: '계속 유지 (장기 보유)', desc: '단기 수익에 흔들리지 않음', icon: '🧘', 
+      { id: 'hold_long', label: '계속 유지', icon: '🧘', 
         score: { invest: 3, speculate: 0 }, type: 'hold' },
-      { id: 'take_profit', label: '절반 익절, 절반 유지', desc: '수익 확보 + 추가 상승 노림', icon: '💰', 
+      { id: 'take_profit', label: '절반 익절, 절반 유지', icon: '💰', 
         score: { invest: 2, speculate: 1 }, type: 'partial_sell' },
-      { id: 'switch_hotter', label: '가장 많이 오른 종목으로 갈아타기', desc: '더 큰 수익을 노림', icon: '🔥', 
+      { id: 'switch_hotter', label: '가장 많이 오른 종목으로 갈아타기', icon: '🔥', 
         score: { invest: 0, speculate: 3 }, type: 'switch_to_hottest' }
     ]
   },
@@ -680,16 +796,16 @@ const ROUNDS = [
     eventType: 'danger',
     eventLabel: '🚨 시장 충격',
     eventTitle: '글로벌 악재, 전 종목 동반 폭락',
-    eventDesc: '예상치 못한 외부 충격으로 모든 종목이 -15~-25% 폭락. 시장이 패닉 상태입니다.',
+    eventDesc: '',
     priceChange: { A: -22, B: -15, C: -25, D: -17 },
     hotStock: null,
     question: '시장이 패닉이에요. 마지막 선택은?',
     actions: [
-      { id: 'buy_dip_value', label: '우량주(B 또는 D) 저점 매수', desc: '위기를 기회로', icon: '🎯', 
+      { id: 'buy_dip_value', label: '우량주 저점 매수', icon: '🎯', 
         score: { invest: 3, speculate: 0 }, type: 'switch_choose', options: ['B', 'D'] },
-      { id: 'panic_sell', label: '전량 매도 (더 떨어지기 전에 다 판다)', desc: '공포에 의한 매도', icon: '😱', 
+      { id: 'panic_sell', label: '전량 매도', icon: '😱', 
         score: { invest: 0, speculate: 3 }, type: 'sell_all' },
-      { id: 'gamble', label: '"이참에 코인이나 도박을 해볼까?"', desc: '다른 위험한 곳으로 도피', icon: '🎰', 
+      { id: 'gamble', label: '코인·도박으로 도피', icon: '🎰', 
         score: { invest: 0, speculate: 4 }, type: 'gamble' }
     ]
   }
@@ -706,10 +822,14 @@ let state = {
   cash: 1000000,
   currentRound: 0,
   selectedAction: null,
-  pendingSwitchTarget: null, // 갈아탈 종목 선택 대기
+  pendingSwitchTarget: null,
   actionHistory: [],
   scores: { invest: 0, speculate: 0 },
-  startTime: Date.now()
+  startTime: Date.now(),
+  surveyPhase: 'common',
+  surveyBranch: null,
+  surveyAnswers: {},
+  isSubmitting: false
 };
 
 // 주가 히스토리 (라운드마다 갱신)
@@ -741,14 +861,20 @@ function updateProgress() {
   let percent = 0;
   if (state.screen === 'intro') percent = 0;
   else if (state.screen === 'select') percent = 10;
-  else if (state.screen === 'round') percent = 10 + (state.currentRound + 1) * 16;
-  else if (state.screen === 'result') percent = 100;
+  else if (state.screen === 'round') percent = 10 + (state.currentRound + 1) * 14;
+  else if (state.screen === 'result') percent = 82;
+  else if (state.screen === 'survey') {
+    percent = state.surveyPhase === 'common' ? 88 : 94;
+  }
+  else if (state.screen === 'surveySubmit' || state.screen === 'thanks') percent = 100;
   progressFill.style.width = percent + '%';
 
   if (state.screen === 'intro') stepIndicator.textContent = '';
   else if (state.screen === 'select') stepIndicator.textContent = '종목 선택';
   else if (state.screen === 'round') stepIndicator.textContent = `${state.currentRound + 1}주차 / 5주차`;
   else if (state.screen === 'result') stepIndicator.textContent = '결과';
+  else if (state.screen === 'survey') stepIndicator.textContent = '설문';
+  else if (state.screen === 'surveySubmit' || state.screen === 'thanks') stepIndicator.textContent = '제출';
 }
 
 function render() {
@@ -757,36 +883,21 @@ function render() {
   else if (state.screen === 'select') renderSelect();
   else if (state.screen === 'round') renderRound();
   else if (state.screen === 'result') renderResult();
+  else if (state.screen === 'survey') renderSurvey();
+  else if (state.screen === 'surveySubmit') renderSurveySubmit();
+  else if (state.screen === 'thanks') renderThanks();
 }
 
 // ========= 인트로 =========
 function renderIntro() {
   content.innerHTML = `
-    <div class="intro-hero">
-      <div class="money">💰</div>
-      <h2>100만 원이 생겼다!</h2>
-      <p>5주 동안 시장이 흔들려도<br>나는 끝까지 투자자일 수 있을까?</p>
-    </div>
-    <div class="label-tag">테스트 안내</div>
-    <h1 class="title">나는 진짜 '투자자'일까?<br>아니면 '투기꾼'일까?</h1>
-    <p class="subtitle">시장이 매주 출렁이는 상황에서 어떻게 행동하는지 5라운드에 걸쳐 진단합니다.</p>
-    <div class="feature-list">
-      <div class="feature-item">
-        <div class="num">1</div>
-        <div class="text"><strong>4개 종목 중 하나</strong>를 골라 100만 원 투자</div>
-      </div>
-      <div class="feature-item">
-        <div class="num">2</div>
-        <div class="text"><strong>매주 시장 이벤트</strong>가 발생합니다 (폭등, 폭락, 친구 추천 등)</div>
-      </div>
-      <div class="feature-item">
-        <div class="num">3</div>
-        <div class="text">매주 <strong>유지 / 갈아타기 / 특수 행동</strong> 중 선택</div>
-      </div>
-      <div class="feature-item">
-        <div class="num">4</div>
-        <div class="text">5주 후 <strong>투자형 vs 투기형 비율</strong> + 최종 수익률 공개</div>
-      </div>
+    <div class="intro-hero" style="margin-top:40px;padding:60px 28px;">
+      <div class="money" style="font-size:64px;margin-bottom:16px;">💰</div>
+      <h2 style="font-size:30px;line-height:1.3;">나는 투자자일까,<br>투기꾼일까?</h2>
+      <p style="margin-top:16px;font-size:15px;line-height:1.6;">
+        100만 원으로 시작하는<br>
+        5주간의 모의주식투자
+      </p>
     </div>
   `;
   bottomCta.style.display = 'block';
@@ -813,7 +924,6 @@ function renderSelect() {
           </div>
           <div style="text-align:right;">
             <div style="font-weight:700;">${s.initialPrice.toLocaleString()}원</div>
-            <div style="font-size:11px;color:var(--text-dim);">시작가</div>
           </div>
         </div>
         <div class="desc">${s.desc}</div>
@@ -821,9 +931,8 @@ function renderSelect() {
     `;
   }
   content.innerHTML = `
-    <div class="label-tag">STEP 1</div>
     <h1 class="title">어떤 종목을 살까요?</h1>
-    <p class="subtitle">100만 원으로 1개 종목 매수. 이후 5주간 시장에 어떻게 대응할지 테스트됩니다.</p>
+    <p class="subtitle">100만 원으로 1개 종목 매수</p>
     ${cards}
   `;
   updateSelectCta();
@@ -879,17 +988,15 @@ function renderRound() {
   const myStockHtml = state.ownedKey ? `
     <div class="my-stock-card">
       <div class="owned-tag">내 종목</div>
-      <div class="label-small">${state.ownedKey}사 보유 중</div>
       <div class="name">${myStock.name}</div>
-      <div class="industry">${myStock.industry} · ${state.ownedShares}주</div>
+      <div class="industry">${state.ownedShares}주 보유</div>
       <div class="price-row">
         <div>
           <div class="price-now">${myValue.toLocaleString()}원</div>
-          <div style="font-size:11px;color:var(--text-dim);">주당 ${myPrice.toLocaleString()}원</div>
         </div>
         <div class="change-info">
           <div class="week change ${myWeekChg > 0 ? 'up' : (myWeekChg < 0 ? 'down' : 'neutral')}">
-            ${myWeekChg > 0 ? '+' : ''}${myWeekChg}% (이번 주)
+            ${myWeekChg > 0 ? '+' : ''}${myWeekChg}%
           </div>
           <div class="total">총 ${myTotalChg > 0 ? '+' : ''}${myTotalChg}%</div>
         </div>
@@ -900,24 +1007,22 @@ function renderRound() {
   // 통합 그래프 (4개 종목 다 표시)
   const unifiedChart = renderUnifiedChart();
 
-  // 이벤트
+  // 이벤트 (eventDesc는 빈 문자열이므로 표시 안됨)
   const eventClass = round.eventType;
   const eventHtml = `
     <div class="event-card ${eventClass}">
       <div class="event-label">${round.eventLabel}</div>
       <div class="event-title">${round.eventTitle}</div>
-      <div class="event-desc">${round.eventDesc}</div>
     </div>
   `;
 
   // 질문
   const question = round.questionDynamic ? round.questionDynamic(state.ownedKey) : round.question;
 
-  // 액션 버튼
+  // 액션 버튼 (desc 제거, label만)
   let actionsHtml = '';
   round.actions.forEach(action => {
     const sel = state.selectedAction === action.id;
-    // 이미 그 종목 보유 중이면 "그 종목으로 갈아타기"는 의미 없음
     let disabled = false;
     if (action.type === 'switch' && action.target === state.ownedKey) disabled = true;
     actionsHtml += `
@@ -927,7 +1032,6 @@ function renderRound() {
         <div class="icon">${action.icon}</div>
         <div class="text">
           <div class="label">${action.label}${disabled ? ' (이미 보유)' : ''}</div>
-          <div class="desc">${action.desc}</div>
         </div>
       </button>
     `;
@@ -1340,8 +1444,6 @@ function renderResult() {
 
   const portfolioValue = getPortfolioValue();
   const finalChg = ((portfolioValue - 1000000) / 1000000 * 100).toFixed(1);
-  
-  // 종목 변경 횟수
   let switches = 0;
   let prevOwned = state.initialStock;
   state.actionHistory.forEach(h => {
@@ -1350,8 +1452,6 @@ function renderResult() {
       prevOwned = h.target;
     }
   });
-
-  const code = `${state.initialStock}_${state.actionHistory.map(h => h.actionId.substring(0, 4)).join('-')}_I${state.scores.invest}S${state.scores.speculate}`;
 
   content.innerHTML = `
     <div class="result-hero">
@@ -1406,153 +1506,381 @@ function renderResult() {
       <div class="text">${desc}</div>
     </div>
 
-    <div class="submit-area">
-      <p><strong>📊 설문 응답 제출</strong><br>
-      통계 분석을 위해 아래 정보를 입력하고 제출해주세요</p>
-      <div class="form-row">
-        <label>학년</label>
-        <select id="form-grade">
-          <option value="">선택</option>
-          <option value="중1">중1</option>
-          <option value="중2">중2</option>
-          <option value="중3">중3</option>
-          <option value="고1">고1</option>
-          <option value="고2">고2</option>
-          <option value="고3">고3</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label>성별</label>
-        <select id="form-gender">
-          <option value="">선택</option>
-          <option value="남">남</option>
-          <option value="여">여</option>
-          <option value="응답안함">응답 안 함</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label>실제로 주식 투자를 해본 적이 있나요?</label>
-        <select id="form-experience">
-          <option value="">선택</option>
-          <option value="있음">있다</option>
-          <option value="관심있음">없지만 관심 있다</option>
-          <option value="관심없음">없고 관심도 없다</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label>학교에서 금융/경제 수업을 받은 적이 있나요?</label>
-        <select id="form-education">
-          <option value="">선택</option>
-          <option value="있음">있다</option>
-          <option value="없음">없다</option>
-          <option value="모름">모르겠다</option>
-        </select>
-      </div>
-      
-      <div style="margin: 20px 0 12px; padding: 14px; background: var(--primary-light); border-radius: 12px; border-left: 4px solid var(--primary);">
-        <div style="font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-bottom: 4px;">
-          🎁 추첨 응모 (선택)
-        </div>
-        <div style="font-size: 12px; color: var(--text-sub); line-height: 1.5;">
-          이름 + 전화번호를 입력하시면 추첨을 통해 간식을 드립니다.<br>
-          개인정보는 추첨 후 즉시 폐기됩니다. 입력하지 않아도 응답은 제출됩니다.
-        </div>
-      </div>
-      
-      <div class="form-row">
-        <label>이름 (선택)</label>
-        <input type="text" id="form-name" placeholder="예: 김세곽" />
-      </div>
-      <div class="form-row">
-        <label>전화번호 (선택)</label>
-        <input type="tel" id="form-phone" placeholder="예: 010-1234-5678" />
-      </div>
-      
-      <button class="cta-btn" onclick="submitResponse()" style="margin-top:8px;">제출하기</button>
-      <div id="submit-status"></div>
-      <div style="font-size:11px;color:var(--text-dim);margin-top:12px;">
-        응답 코드: ${code}
-      </div>
+    <div class="survey-intro-card">
+      <h3>이어서 짧은 설문이 진행됩니다</h3>
+      <p>방금 진행한 모의주식투자 결과와 함께, SNS 주식 콘텐츠 노출 경험과 투자 성향을 분석하기 위한 공통 질문 및 분기 질문을 받습니다.</p>
     </div>
   `;
 
   bottomCta.style.display = 'block';
-  bottomCta.innerHTML = `<button class="cta-btn secondary" onclick="restart()">다시 테스트하기 🔄</button>`;
+  bottomCta.innerHTML = `<button class="cta-btn" onclick="startSurvey()">설문 이어서 응답하기 →</button>`;
 }
 
-// ========= 제출 =========
-function submitResponse() {
-  const grade = document.getElementById('form-grade').value;
-  const gender = document.getElementById('form-gender').value;
-  const experience = document.getElementById('form-experience').value;
-  const education = document.getElementById('form-education').value;
-  const name = document.getElementById('form-name').value.trim();
-  const phone = document.getElementById('form-phone').value.trim();
-  const statusEl = document.getElementById('submit-status');
-  
-  if (!grade || !gender || !experience || !education) {
-    statusEl.className = 'submit-status error';
-    statusEl.textContent = '⚠️ 필수 항목(학년, 성별, 경험, 교육)을 모두 선택해주세요';
+// ========= 설문 문항 =========
+const SURVEY_COMMON = [
+  {
+    id: 'q1_grade', section: 'Ⅰ. 공통 질문', number: '1', type: 'single',
+    title: '현재 학년은 무엇인가요?',
+    options: ['중학생', '고등학생', '성인']
+  },
+  {
+    id: 'q2_sns_frequency', section: 'Ⅰ. 공통 질문', number: '2', type: 'single',
+    title: '최근 6개월 동안 SNS·유튜브에서 주식 관련 콘텐츠를 얼마나 자주 보았나요?',
+    options: ['거의 매일 본다', '일주일에 여러 번 본다', '한 달에 몇 번 본다', '거의 본 적 없다', '전혀 본 적 없다']
+  },
+  {
+    id: 'q3_sns_effects', section: 'Ⅰ. 공통 질문', number: '3', type: 'multi',
+    title: 'SNS에서 주식 콘텐츠를 본 후, 다음 중 경험한 것이 있다면 모두 체크해주세요.',
+    help: '복수 응답 가능',
+    options: ['주식에 관심이 생겼다', '“나도 해볼까?”라는 생각이 들었다', '추천 종목을 직접 찾아본 적이 있다', '친구·가족과 그 콘텐츠에 대해 이야기한 적이 있다', '별다른 영향은 없었다', 'SNS 주식 콘텐츠를 본 적 없다']
+  },
+  {
+    id: 'q4_info_source', section: 'Ⅰ. 공통 질문', number: '4', type: 'single',
+    title: '주식 관련 정보를 주로 어디서 접하나요?',
+    options: ['유튜브', '인스타그램 / 릴스', '틱톡', '네이버 뉴스 / 경제 기사', '증권사 앱', '주식 관련 커뮤니티', '친구 또는 또래', '부모님 또는 가족', '학교 수업 / 경제 교육', '주식 정보를 얻지 않는다', '기타'],
+    hasOther: true
+  },
+  {
+    id: 'q5_sns_trust', section: 'Ⅰ. 공통 질문', number: '5', type: 'single',
+    title: 'SNS 주식 정보를 신뢰하는 편인가요?',
+    options: ['전혀 신뢰하지 않는다', '별로 신뢰하지 않는다', '보통이다', '어느 정도 신뢰한다', '매우 신뢰한다']
+  },
+  {
+    id: 'q6_knowledge_level', section: 'Ⅰ. 공통 질문', number: '6', type: 'single',
+    title: '본인의 주식 관련 지식 수준은 어느 정도라고 생각하나요?',
+    options: ['전혀 모른다', '잘 모르는 편이다', '보통이다', '어느 정도 알고 있다', '매우 잘 알고 있다']
+  },
+  {
+    id: 'q7_peer_fomo', section: 'Ⅰ. 공통 질문', number: '7', type: 'single',
+    title: '친구들이 특정 종목을 산다고 하면 나도 사고 싶어진 적이 있나요?',
+    options: ['전혀 없다', '거의 없다', '보통이다', '가끔 있다', '자주 있다']
+  },
+  {
+    id: 'q8_important_factor', section: 'Ⅰ. 공통 질문', number: '8', type: 'single',
+    title: '주식투자에서 가장 중요하다고 생각하는 것은 무엇인가요?',
+    options: ['단기간에 높은 수익을 얻는 것', '장기적으로 안정적인 수익을 얻는 것', '손실을 최대한 줄이는 것', '기업의 가치를 보고 투자하는 것', '주변 사람보다 높은 수익을 얻는 것', '아직 잘 모르겠다']
+  },
+  {
+    id: 'q9_experience', section: 'Ⅰ. 공통 질문', number: '9', type: 'single',
+    title: '주식투자 또는 모의주식투자 경험이 있나요?',
+    help: '이 문항을 기준으로 뒤의 질문이 달라집니다.',
+    options: [
+      { value: 'experience', label: '실제 주식투자 또는 모의주식투자를 해본 적이 있다' },
+      { value: 'interest', label: '주식투자는 해본 적 없지만 관심은 있다' },
+      { value: 'none', label: '주식투자를 해본 적도 없고 관심도 없다' }
+    ]
+  }
+];
+
+const SURVEY_BRANCH_A = [
+  {
+    id: 'a10_start_reason', section: 'Ⅱ. 선택 질문 A', number: '10', type: 'multi',
+    title: '주식투자 또는 모의주식투자를 시작하게 된 계기는 무엇인가요?',
+    help: '실제 주식투자 또는 모의주식투자 경험이 있는 응답자용 · 복수 응답 가능',
+    options: ['부모님 또는 가족의 영향', '친구 또는 또래의 추천', '유튜브, 쇼츠, 릴스 등 SNS 콘텐츠를 보고', '경제 뉴스나 기사에 관심이 생겨서', '학교 수업이나 경제 교육을 통해', '주식 관련 대회나 모의투자를 통해', '돈을 벌고 싶어서', '주변 사람들이 많이 해서', '코스피 상승, 주식 열풍 등 사회적 분위기 때문에', '기타'],
+    hasOther: true
+  },
+  {
+    id: 'a11_sns_dependency', section: 'Ⅱ. 선택 질문 A', number: '11', type: 'single',
+    title: '주식 정보를 얻을 때 SNS에 얼마나 의존하나요?',
+    options: ['전혀 의존하지 않는다', '별로 의존하지 않는다', '보통이다', '어느 정도 의존한다', '매우 의존한다']
+  },
+  {
+    id: 'a12_decision_factor', section: 'Ⅱ. 선택 질문 A', number: '12', type: 'single',
+    title: '매수 또는 매도 결정을 할 때 가장 큰 영향을 주는 요소는 무엇인가요?',
+    options: ['기업의 실적이나 재무 상태', '경제 뉴스와 시장 상황', '차트나 주가 흐름', '유튜브, 쇼츠, 릴스 등 SNS 정보', '친구 또는 또래의 추천', '부모님 또는 가족의 조언', '주식 커뮤니티의 분위기', '단기간에 오를 것 같다는 느낌', '유명인 또는 인플루언서의 추천', '기타'],
+    hasOther: true
+  },
+  {
+    id: 'a13_short_term', section: 'Ⅱ. 선택 질문 A', number: '13', type: 'single',
+    title: '실제 또는 모의투자에서 장기 보유보다 단기간 수익을 더 중요하게 생각했나요?',
+    options: ['전혀 그렇지 않다', '그렇지 않은 편이다', '보통이다', '그런 편이다', '매우 그렇다']
+  },
+  {
+    id: 'a14_peer_decision', section: 'Ⅱ. 선택 질문 A', number: '14', type: 'single',
+    title: '친구나 또래의 추천에 따라 매수 또는 매도를 결정한 적이 있나요?',
+    options: ['전혀 없다', '거의 없다', '보통이다', '가끔 있다', '자주 있다']
+  },
+  {
+    id: 'a15_impulsive_trade', section: 'Ⅱ. 선택 질문 A', number: '15', type: 'single',
+    title: '물타기, 패닉 매도 등 충동적 매매를 한 경험이 있나요?',
+    options: ['전혀 없다', '1번 있다', '2~3번 있다', '4번 이상 있다']
+  }
+];
+
+const SURVEY_BRANCH_B = [
+  {
+    id: 'b15_not_started_reason', section: 'Ⅲ. 선택 질문 B', number: '15', type: 'multi',
+    title: '주식투자를 하지 않는 이유는 무엇인가요?',
+    help: '복수 응답 가능',
+    options: ['경제 용어가 어려워서', '어떤 종목을 골라야 할지 몰라서', '주식 정보를 어디서 봐야 할지 몰라서', '손실이 두려워서', '아직 필요성을 못 느껴서', '관심이 없어서', '모의투자부터 해보고 싶어서', '기타'],
+    hasOther: true
+  },
+  {
+    id: 'b16_future_intention', section: 'Ⅲ. 선택 질문 B', number: '16', type: 'single',
+    title: '앞으로 주식투자나 모의주식투자를 해볼 의향이 있나요?',
+    options: ['전혀 없다', '별로 없다', '보통이다', '어느 정도 있다', '매우 있다']
+  },
+  {
+    id: 'b17_expected_influence', section: 'Ⅲ. 선택 질문 B', number: '17', type: 'single',
+    title: '만약 주식투자를 시작한다면 가장 큰 영향을 받을 것 같은 요인은 무엇인가요?',
+    options: ['부모님 또는 가족의 조언', '친구 또는 또래의 추천', '유튜브, 쇼츠, 릴스 등 SNS 콘텐츠', '경제 뉴스나 기사', '학교 수업 / 경제 교육', '주식 관련 대회나 모의투자', '돈을 벌고 싶다는 생각', '시작할 생각이 전혀 없다', '기타'],
+    hasOther: true
+  }
+];
+
+function startSurvey() {
+  state.screen = 'survey';
+  state.surveyPhase = 'common';
+  state.surveyBranch = null;
+  state.surveyAnswers = {};
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  render();
+}
+
+function getSurveySequence() {
+  const branchAnswer = state.surveyAnswers.q9_experience?.value;
+  let branch = state.surveyBranch;
+  if (!branch && branchAnswer) branch = branchAnswer;
+
+  if (branch === 'experience') return SURVEY_COMMON.concat(SURVEY_BRANCH_A);
+  if (branch === 'interest') return SURVEY_COMMON.concat(SURVEY_BRANCH_B);
+  return SURVEY_COMMON;
+}
+
+function getOptionValue(option) {
+  return typeof option === 'string' ? option : option.value;
+}
+function getOptionLabel(option) {
+  return typeof option === 'string' ? option : option.label;
+}
+
+// 설문은 두 페이지: 'common' (공통 9문항 한 페이지) → 'branch' (분기 추가 문항)
+function renderSurvey() {
+  const phase = state.surveyPhase || 'common';
+  const questions = phase === 'common' ? SURVEY_COMMON : 
+                    (state.surveyBranch === 'experience' ? SURVEY_BRANCH_A : SURVEY_BRANCH_B);
+
+  let questionsHtml = questions.map(q => renderSurveyQuestionInline(q)).join('');
+
+  const headerText = phase === 'common' 
+    ? '<h1 class="title">설문조사</h1><p class="subtitle">모든 문항에 응답해주세요</p>'
+    : (state.surveyBranch === 'experience' 
+        ? '<h1 class="title">투자 경험자 추가 질문</h1>'
+        : '<h1 class="title">비경험자 추가 질문</h1>');
+
+  content.innerHTML = `
+    ${headerText}
+    <div class="survey-page">${questionsHtml}</div>
+    <div id="survey-alert-global" class="survey-alert" style="margin-top:16px;">모든 항목에 응답해주세요.</div>
+  `;
+
+  bottomCta.style.display = 'block';
+  bottomCta.innerHTML = `
+    <button class="cta-btn" onclick="nextSurveyPhase()">${phase === 'common' ? '다음 →' : '제출 화면으로 →'}</button>
+  `;
+}
+
+function renderSurveyQuestionInline(q) {
+  const saved = state.surveyAnswers[q.id];
+  const currentValues = q.type === 'multi' ? (saved?.value || []) : [saved?.value].filter(Boolean);
+  const otherValue = saved?.other || '';
+
+  const optionsHtml = q.options.map((opt) => {
+    const value = getOptionValue(opt);
+    const label = getOptionLabel(opt);
+    const checked = currentValues.includes(value) ? 'checked' : '';
+    const inputType = q.type === 'multi' ? 'checkbox' : 'radio';
+    return `
+      <label class="survey-option">
+        <input type="${inputType}" name="${q.id}" value="${escapeAttr(value)}" ${checked}>
+        <span>${label}</span>
+      </label>
+    `;
+  }).join('');
+
+  const otherHtml = q.hasOther ? `
+    <input class="survey-other-input" id="other-${q.id}" type="text" placeholder="기타 내용을 입력해주세요" value="${escapeAttr(otherValue)}">
+  ` : '';
+
+  return `
+    <div class="survey-card" data-qid="${q.id}">
+      <div class="survey-question">${q.title}</div>
+      ${q.help ? `<div class="survey-help">${q.help}</div>` : ''}
+      <div class="survey-options">${optionsHtml}</div>
+      ${otherHtml}
+    </div>
+  `;
+}
+
+function escapeAttr(value) {
+  return String(value ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function collectInlineAnswer(q) {
+  const checked = [...document.querySelectorAll(`input[name="${q.id}"]:checked`)];
+  if (checked.length === 0) return null;
+  const otherInput = document.getElementById(`other-${q.id}`);
+  const other = otherInput ? otherInput.value.trim() : '';
+  if (q.type === 'multi') return { value: checked.map(x => x.value), other };
+  return { value: checked[0].value, other };
+}
+
+function nextSurveyPhase() {
+  const phase = state.surveyPhase || 'common';
+  const questions = phase === 'common' ? SURVEY_COMMON : 
+                    (state.surveyBranch === 'experience' ? SURVEY_BRANCH_A : SURVEY_BRANCH_B);
+
+  // 모든 문항 검증
+  let allAnswered = true;
+  let firstUnanswered = null;
+  for (const q of questions) {
+    const ans = collectInlineAnswer(q);
+    if (!ans) {
+      allAnswered = false;
+      if (!firstUnanswered) firstUnanswered = q.id;
+      continue;
+    }
+    state.surveyAnswers[q.id] = ans;
+    if (q.id === 'q9_experience') state.surveyBranch = ans.value;
+  }
+
+  if (!allAnswered) {
+    const alert = document.getElementById('survey-alert-global');
+    if (alert) alert.classList.add('show');
+    // 미응답 문항으로 스크롤
+    if (firstUnanswered) {
+      const el = document.querySelector(`[data-qid="${firstUnanswered}"]`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
     return;
   }
 
+  if (phase === 'common') {
+    state.surveyPhase = 'branch';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    render();
+  } else {
+    state.screen = 'surveySubmit';
+    render();
+  }
+}
+
+function renderSurveySubmit() {
+  content.innerHTML = `
+    <div class="survey-submit-card">
+      <div class="emoji">✅</div>
+      <h2>설문이 완료되었어요</h2>
+      <p>마지막으로 확인하고 제출해주세요</p>
+    </div>
+    
+    <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffefd5 100%); border-radius: 16px; padding: 18px; margin-bottom: 16px; border-left: 4px solid var(--yellow);">
+      <div style="font-size: 14px; font-weight: 700; color: #c08400; margin-bottom: 6px;">
+        🎁 상품 추첨 응모 (선택)
+      </div>
+      <div style="font-size: 12px; color: var(--text-sub); line-height: 1.5;">
+        추첨 응모를 원하시면 연락처를 입력해주세요.<br>
+        개인정보는 추첨 후 즉시 폐기됩니다.
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <label>인스타그램 ID 또는 전화번호 <span style="color:var(--text-dim);font-weight:400;">(선택)</span></label>
+      <input type="text" id="prize-contact" placeholder="@instagram_id 또는 010-1234-5678" />
+    </div>
+    <div style="font-size:11px;color:var(--text-dim);margin-top:-4px;margin-bottom:16px;">
+      ※ 추첨에 응모하지 않으려면 빈 칸으로 두고 제출하세요
+    </div>
+    
+    <div id="submit-status" class="submit-status" style="margin-top:16px;"></div>
+  `;
+  bottomCta.style.display = 'block';
+  bottomCta.innerHTML = `
+    <div class="survey-nav">
+      <button class="cta-btn secondary" onclick="backToLastSurveyQuestion()">← 수정</button>
+      <button class="cta-btn" onclick="submitSurveyResponse()">제출하기</button>
+    </div>
+  `;
+}
+
+function backToLastSurveyQuestion() {
+  state.screen = 'survey';
+  state.surveyPhase = state.surveyBranch ? 'branch' : 'common';
+  render();
+}
+
+function buildSubmissionData() {
   const total = state.scores.invest + state.scores.speculate;
   const investPct = total > 0 ? Math.round(state.scores.invest / total * 100) : 50;
   const portfolioValue = getPortfolioValue();
   const finalChg = ((portfolioValue - 1000000) / 1000000 * 100).toFixed(1);
-  
-  // 라운드별 행동을 각각 컬럼으로 분리 (분석 편의)
   const getActionForRound = (roundNum) => {
     const h = state.actionHistory.find(x => x.round === roundNum);
     return h ? h.actionId : '';
   };
-  
-  // 라운드별 보유 종목 추적 (분석용)
-  const getOwnedAfterRound = (roundNum) => {
+  const getTargetForRound = (roundNum) => {
     const h = state.actionHistory.find(x => x.round === roundNum);
     if (!h) return '';
     if (h.target === 'GAMBLE') return 'GAMBLE';
     return h.target || '';
   };
 
-  const data = {
+  const flatAnswers = {};
+  Object.entries(state.surveyAnswers).forEach(([key, ans]) => {
+    flatAnswers[key] = Array.isArray(ans.value) ? ans.value.join(' | ') : ans.value;
+    if (ans.other) flatAnswers[`${key}_other`] = ans.other;
+  });
+
+  // 추첨용 정보 수집 (선택)
+  const prizeContact = document.getElementById('prize-contact')?.value.trim() || '';
+
+  return {
     timestamp: new Date().toISOString(),
-    // 기본 정보
-    grade: grade,
-    gender: gender,
-    experience: experience,
-    education: education,
-    // 추첨용 (선택 입력)
-    name: name || '',
-    phone: phone || '',
-    // 시뮬레이션 결과
+    surveyBranch: state.surveyBranch || 'none',
+    prizeContact: prizeContact,
+    ...flatAnswers,
     initialStock: state.initialStock,
     finalStock: state.ownedKey || 'CASH',
-    // 라운드별 행동 (분석 편의를 위해 분리)
     action_round1: getActionForRound(1),
     action_round2: getActionForRound(2),
     action_round3: getActionForRound(3),
     action_round4: getActionForRound(4),
     action_round5: getActionForRound(5),
-    // 라운드별 보유 종목 변경 (갈아탔는지 추적)
-    target_round1: getOwnedAfterRound(1),
-    target_round2: getOwnedAfterRound(2),
-    target_round3: getOwnedAfterRound(3),
-    target_round4: getOwnedAfterRound(4),
-    target_round5: getOwnedAfterRound(5),
-    // 점수
+    target_round1: getTargetForRound(1),
+    target_round2: getTargetForRound(2),
+    target_round3: getTargetForRound(3),
+    target_round4: getTargetForRound(4),
+    target_round5: getTargetForRound(5),
     investScore: state.scores.invest,
     speculateScore: state.scores.speculate,
     investPercent: investPct,
-    // 결과
+    speculatePercent: 100 - investPct,
     finalPortfolio: portfolioValue,
     returnPercent: parseFloat(finalChg),
     durationSec: Math.round((Date.now() - state.startTime) / 1000)
   };
+}
+
+function submitSurveyResponse() {
+  // 중복 제출 방지
+  if (state.isSubmitting) return;
+  state.isSubmitting = true;
+
+  const statusEl = document.getElementById('submit-status');
+  const data = buildSubmissionData();
+
+  // 제출 버튼 비활성화
+  const submitBtn = document.querySelector('.bottom-cta .cta-btn:not(.secondary)');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = '제출 중...';
+    submitBtn.style.opacity = '0.6';
+  }
 
   if (!GOOGLE_SCRIPT_URL) {
     statusEl.className = 'submit-status success';
-    statusEl.textContent = '✓ 응답 완료! (자동 저장 미설정)';
+    statusEl.textContent = '✓ 응답 완료! 자동 저장 URL이 비어 있어 브라우저에서만 완료 처리되었습니다.';
+    setTimeout(() => { state.screen = 'thanks'; render(); }, 600);
     return;
   }
 
@@ -1565,13 +1893,31 @@ function submitResponse() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   }).then(() => {
-    statusEl.className = 'submit-status success';
-    statusEl.textContent = '✓ 응답이 제출되었습니다. 감사합니다!';
+    state.screen = 'thanks';
+    render();
   }).catch(err => {
+    state.isSubmitting = false; // 실패 시 재시도 허용
     statusEl.className = 'submit-status error';
     statusEl.textContent = '⚠️ 제출 실패. 다시 시도해주세요.';
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '제출하기';
+      submitBtn.style.opacity = '1';
+    }
     console.error(err);
   });
+}
+
+function renderThanks() {
+  content.innerHTML = `
+    <div class="survey-submit-card">
+      <div class="emoji">🎉</div>
+      <h2>응답이 제출되었습니다</h2>
+      <p>모의주식투자 결과와 설문 응답이 함께 기록되었습니다.<br>참여해주셔서 감사합니다!</p>
+    </div>
+  `;
+  bottomCta.style.display = 'block';
+  bottomCta.innerHTML = `<button class="cta-btn secondary" onclick="restart()">처음부터 다시 하기 🔄</button>`;
 }
 
 function restart() {
@@ -1589,7 +1935,11 @@ function restart() {
     pendingSwitchTarget: null,
     actionHistory: [],
     scores: { invest: 0, speculate: 0 },
-    startTime: Date.now()
+    startTime: Date.now(),
+    surveyPhase: 'common',
+    surveyBranch: null,
+    surveyAnswers: {},
+    isSubmitting: false
   };
   render();
 }
